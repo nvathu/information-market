@@ -11,9 +11,12 @@
     "y": 300,
     "radius": 50
   },
-  "simulation_steps": 100000,
+  "simulation_steps": 100000, 
+
   "transitory_period": 0,
-  "number_runs": 32,
+
+  "number_runs": 2, 
+ 
   "visualization": {
     "activate": false,
     "fps": 60

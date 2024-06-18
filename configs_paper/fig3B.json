@@ -15,7 +15,7 @@
   "transitory_period": 0,
   "number_runs": 128,
   "visualization": {
-    "activate": false,
+    "activate": true,
     "fps": 60
   },
   "random_walk": {
