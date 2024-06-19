@@ -29,6 +29,11 @@ class Environment:
         self.img = None
         self.timestep = 0
 
+        self.wall_x = self.width // 2
+        self.wall_y = self.height // 2.5
+        self.wall_width = 5  
+        self.wall_height = 500
+
     def load_images(self):
         self.img = ImageTk.PhotoImage(file="../assets/strawberry.png")
 
@@ -117,6 +122,8 @@ class Environment:
     def draw(self, canvas):
         self.draw_zones(canvas)
         self.draw_strawberries(canvas)
+        self.draw_wall(canvas)
+
         for robot in self.population:
             robot.draw(canvas)
         # self.draw_best_bot(canvas)
@@ -222,3 +229,18 @@ class Environment:
     def pickup_food(self, robot):
         robot.pickup_food()
         self.foraging_spawns[Location.FOOD].pop(robot.id)
+
+    def check_wall_collision(self, new_position, radius):
+        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
+            self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
+            return True
+        return False
+    
+    def draw_wall(self, canvas):
+        canvas.create_rectangle(
+            self.wall_x - self.wall_width // 2,
+            self.wall_y,
+            self.wall_x + self.wall_width // 2,
+            self.wall_height,
+            fill="black"
+        )
