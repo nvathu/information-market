@@ -11,11 +11,11 @@
     "y": 300,
     "radius": 50
   },
-  "simulation_steps": 15000,
+  "simulation_steps": 5000,
   "transitory_period": 0,
-  "number_runs": 128,
+  "number_runs": 42,
   "visualization": {
-    "activate": true,
+    "activate": false,
     "fps": 60
   },
   "random_walk": {

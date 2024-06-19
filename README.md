@@ -24,7 +24,7 @@ Then, navigate into the newly created folder, create a new python virtual enviro
 ```bash
 cd information-market
 python -m venv infomarket-env
-source infomarket-env/bin/activate
+source infomarket-env/Scripts/activate
 pip install -r requirements.txt
 ```
 ## Run
@@ -118,3 +118,8 @@ You can also use your keyboard to control the course of the simulation:
 - `SPACE`: pause/resume simulation;
 - `N`: perform one step of the simulation (useful when paused);
 - TBC
+
+
+---------------------------------------------
+My configuration
+just run 1/3 data of the real paper

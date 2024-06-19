@@ -11,9 +11,9 @@
     "y": 300,
     "radius": 50
   },
-  "simulation_steps": 15000,
+  "simulation_steps": 1500,
   "transitory_period": 7500,
-  "number_runs": 128,
+  "number_runs": 5,
   "visualization": {
     "activate": true,
     "fps": 60

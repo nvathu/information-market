@@ -11,11 +11,11 @@
     "y": 300,
     "radius": 50
   },
-  "simulation_steps": 100000, 
+  "simulation_steps": 5000, 
 
   "transitory_period": 0,
 
-  "number_runs": 2, 
+  "number_runs": 42, 
  
   "visualization": {
     "activate": false,
