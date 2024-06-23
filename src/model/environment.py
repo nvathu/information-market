@@ -31,7 +31,7 @@ class Environment:
 
         self.wall_x = self.width // 2
         self.wall_y = self.height // 2.5
-        self.wall_width = 5  
+        self.wall_width = 15  
         self.wall_height = 500
 
     def load_images(self):

@@ -138,13 +138,13 @@ class Agent:
         noise_angle = gauss(self.noise_mu, self.noise_sd)
         noisy_movement = rotate(wanted_movement, noise_angle)
         new_position = self.pos + noisy_movement
+       
 
 
         if self.environment.check_wall_collision(new_position, self._radius):
-            self.orientation += 90
-            self.orientation %= 360
-            noisy_movement = rotate(wanted_movement, self.orientation)
-            new_position = self.pos + noisy_movement
+            new_angle = noise_angle + 180
+            noisy_movement = rotate(wanted_movement, new_angle)
+            new_position = self.pos   + noisy_movement
 
         self.orientation = get_orientation_from_vector(noisy_movement)
         self.pos = self.clamp_to_map(new_position)
