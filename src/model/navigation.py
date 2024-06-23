@@ -6,6 +6,7 @@ import numpy as np
 class Location(Enum):
     FOOD = 1
     NEST = 2
+    MIDDLE = 3
 
 
 class Target:

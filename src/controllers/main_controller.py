@@ -61,6 +61,7 @@ class MainController:
                                        behavior_params=self.config.value_of("behaviors"),
                                        food=self.config.value_of("food"),
                                        nest=self.config.value_of("nest"),
+                                       middle=self.config.value_of("middle"),
                                        payment_system_params=config.value_of("payment_system"),
                                        market_params=config.value_of("market"),
                                        clock=self.clock
