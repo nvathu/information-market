@@ -92,6 +92,9 @@ class Environment:
                    "LEFT": any(
                        self.check_border_collision(robot, robot.pos[0] + speed * cos(radians((orientation + 90) % 360)),
                                                    robot.pos[1] + speed * sin(radians((orientation + 90) % 360)))),
+                   "WALL": 
+                       self.check_wall_collision(robot.pos + speed * cos(radians((orientation + 90) % 360)) , robot.radius()),
+                                                   
                    }
         return sensors
 
@@ -106,6 +109,12 @@ class Environment:
 
         return collide_x, collide_y
 
+    def check_wall_collision(self, new_position, radius):
+        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
+            self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
+            return True
+        return False
+    
     def senses(self, robot, location):
         dist_vector = robot.pos - np.array([self.locations[location][0], self.locations[location][1]])
         dist_from_center = np.sqrt(dist_vector.dot(dist_vector))
@@ -237,12 +246,6 @@ class Environment:
     def pickup_food(self, robot):
         robot.pickup_food()
         self.foraging_spawns[Location.FOOD].pop(robot.id)
-
-    def check_wall_collision(self, new_position, radius):
-        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
-            self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
-            return True
-        return False
     
     def draw_wall(self, canvas):
         canvas.create_rectangle(
