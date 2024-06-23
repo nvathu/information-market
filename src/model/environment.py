@@ -170,7 +170,7 @@ class Environment:
                                          self.middle[1] - self.middle[2],
                                          self.middle[0] + self.middle[2],
                                          self.middle[1] + self.middle[2],
-                                         fill="orange",
+                                         fill="purple",
                                          outline="")
 
     def get_best_bot_id(self):
@@ -184,8 +184,8 @@ class Environment:
         for bot_id, pos in self.foraging_spawns[Location.FOOD].items():
             canvas.create_image(pos[0] - 8, pos[1] - 8, image=self.img, anchor='nw')
 
-        # for bot_id, pos in self.foraging_spawns[Location.NEST].items():
-        #     canvas.create_image(pos[0] - 8, pos[1] - 8, image=self.img, anchor='nw')
+        for bot_id, pos in self.foraging_spawns[Location.NEST].items():
+            canvas.create_image(pos[0] - 8, pos[1] - 8, image=self.img, anchor='nw')
 
     def draw_best_bot(self, canvas):
         circle = canvas.create_oval(self.population[self.best_bot_id].pos[0] - 4,
@@ -219,6 +219,14 @@ class Environment:
                 # Check if robot can deposit food
                 if self.is_on_top_of_spawn(robot, Location.NEST):
                     self.deposit_food(robot)
+            elif self.senses(robot, Location.MIDDLE):
+                # Spawn deposit location if needed
+                if robot.id not in self.foraging_spawns[Location.MIDDLE]:
+                    self.add_spawn(Location.MIDDLE, robot)
+                # Check if robot can deposit food
+                if self.is_on_top_of_spawn(robot, Location.MIDDLE):
+                    self.deposit_food(robot)
+                
         else:
             if self.senses(robot, Location.FOOD):
                 # Spawn food if needed
@@ -236,7 +244,10 @@ class Environment:
 
     def deposit_food(self, robot):
         robot.drop_food()
-        self.foraging_spawns[Location.NEST].pop(robot.id)
+        if robot.id in self.foraging_spawns[Location.NEST]:
+            self.foraging_spawns[Location.NEST].pop(robot.id)
+        elif robot.id in self.foraging_spawns[Location.MIDDLE]:
+            self.foraging_spawns[Location.MIDDLE].pop(robot.id)
 
         reward = self.market.sell_strawberry(robot.id)
 

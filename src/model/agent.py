@@ -179,7 +179,7 @@ class Agent:
                                     outline=self.colors[self.behavior.state],
                                     width=3)
         self.draw_comm_radius(canvas)
-        # self.draw_goal_vector(canvas)
+        self.draw_goal_vector(canvas)
         self.draw_orientation(canvas)
         # self.draw_trace(canvas)
 
@@ -194,16 +194,16 @@ class Agent:
                                     outline="gray")
 
     def draw_goal_vector(self, canvas):
-        arrow = canvas.create_line(self.pos[0],
-                                   self.pos[1],
-                                   self.pos[0] + rotate(
-                                       self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD),
-                                       self.orientation)[0],
-                                   self.pos[1] + rotate(
-                                       self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD),
-                                       self.orientation)[1],
-                                   arrow=LAST,
-                                   fill="darkgreen")
+        # arrow = canvas.create_line(self.pos[0],
+        #                            self.pos[1],
+        #                            self.pos[0] + rotate(
+        #                                self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD),
+        #                                self.orientation)[0],
+        #                            self.pos[1] + rotate(
+        #                                self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD),
+        #                                self.orientation)[1],
+        #                            arrow=LAST,
+        #                            fill="darkgreen")
         arrow = canvas.create_line(self.pos[0],
                                    self.pos[1],
                                    self.pos[0] + rotate(
@@ -214,6 +214,16 @@ class Agent:
                                        self.orientation)[1],
                                    arrow=LAST,
                                    fill="darkorange")
+        arrow = canvas.create_line(self.pos[0],
+                                   self.pos[1],
+                                   self.pos[0] + rotate(
+                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
+                                       self.orientation)[0],
+                                   self.pos[1] + rotate(
+                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
+                                       self.orientation)[1],
+                                   arrow=LAST,
+                                   fill="yellow")
     
 
     def draw_orientation(self, canvas):
