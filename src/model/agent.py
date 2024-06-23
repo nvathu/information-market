@@ -74,12 +74,9 @@ class Agent:
                f"   known: {self.behavior.navigation_table.is_information_valid_for_location(Location.FOOD)}\n" \
                f"expected nest at: ({round(self.pos[0] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.NEST), self.orientation)[0])}, {round(self.pos[1] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.NEST), self.orientation)[1])}), \n" \
                f"   known: {self.behavior.navigation_table.is_information_valid_for_location(Location.NEST)}\n" \
-               f"expected middle at: ({round(self.pos[0] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE), self.orientation)[0])}, {round(self.pos[1] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.NEST), self.orientation)[1])}), \n" \
-               f"   known: {self.behavior.navigation_table.is_information_valid_for_location(Location.MIDDLE)}\n" \
                f"info age:\n" \
                f"   -food={round(self.behavior.navigation_table.get_information_entry(Location.FOOD).age, 3)}\n" \
                f"   -nest={round(self.behavior.navigation_table.get_information_entry(Location.NEST).age, 3)}\n" \
-               f"   -middle={round(self.behavior.navigation_table.get_information_entry(Location.MIDDLE).age, 3)}\n" \
                f"carries food: {self._carries_food}\n" \
                f"drift: {round(self.noise_mu, 5)}\n" \
                f"reward: {round(self.environment.payment_database.get_reward(self.id), 3)}$\n" \
@@ -139,12 +136,10 @@ class Agent:
         noisy_movement = rotate(wanted_movement, noise_angle)
         new_position = self.pos + noisy_movement
        
-
-
         if self.environment.check_wall_collision(new_position, self._radius):
             new_angle = noise_angle + 180
             noisy_movement = rotate(wanted_movement, new_angle)
-            new_position = self.pos   + noisy_movement
+            new_position = self.pos  + noisy_movement
 
         self.orientation = get_orientation_from_vector(noisy_movement)
         self.pos = self.clamp_to_map(new_position)
@@ -213,16 +208,6 @@ class Agent:
                                        self.orientation)[0],
                                    self.pos[1] + rotate(
                                        self.behavior.navigation_table.get_relative_position_for_location(Location.NEST),
-                                       self.orientation)[1],
-                                   arrow=LAST,
-                                   fill="darkorange")
-        arrow = canvas.create_line(self.pos[0],
-                                   self.pos[1],
-                                   self.pos[0] + rotate(
-                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
-                                       self.orientation)[0],
-                                   self.pos[1] + rotate(
-                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
                                        self.orientation)[1],
                                    arrow=LAST,
                                    fill="darkorange")
