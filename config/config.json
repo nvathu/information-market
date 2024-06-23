@@ -16,7 +16,7 @@
     "y": 50,
     "radius": 50
   },
-  "simulation_steps": 15000,
+  "simulation_steps": 16000,
   "transitory_period": 7500,
   "number_runs": 5,
   "visualization": {
@@ -62,7 +62,7 @@
     },
     {
       "class": "ScaboteurBehavior",
-      "population_size": 1,
+      "population_size": 0,
       "parameters": {
         "rotation_angle": 90,
         "threshold": 0.25
