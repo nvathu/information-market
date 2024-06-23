@@ -11,6 +11,11 @@
     "y": 300,
     "radius": 50
   },
+  "middle": {
+    "x": 600,
+    "y": 50,
+    "radius": 50
+  },
   "simulation_steps": 1500,
   "transitory_period": 7500,
   "number_runs": 5,
