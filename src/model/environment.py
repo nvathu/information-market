@@ -12,14 +12,15 @@ from model.payment import PaymentDB
 
 class Environment:
 
-    def __init__(self, width, height, agent_params, behavior_params, food, nest, payment_system_params, market_params, clock):
+    def __init__(self, width, height, agent_params, behavior_params, food, nest, middle, payment_system_params, market_params, clock):
         self.population = list()
         self.width = width
         self.height = height
         self.clock = clock
         self.food = (food['x'], food['y'], food['radius'])
         self.nest = (nest['x'], nest['y'], nest['radius'])
-        self.locations = {Location.FOOD: self.food, Location.NEST: self.nest}
+        self.middle = (middle['x'], middle['y'], middle['radius'])
+        self.locations = {Location.FOOD: self.food, Location.NEST: self.nest, Location.MIDDLE: self.middle}
         self.foraging_spawns = self.create_spawn_dicts()
         self.create_robots(agent_params, behavior_params)
         self.best_bot_id = self.get_best_bot_id()
@@ -31,7 +32,7 @@ class Environment:
 
         self.wall_x = self.width // 2
         self.wall_y = self.height // 2.5
-        self.wall_width = 5  
+        self.wall_width = 15  
         self.wall_height = 500
 
     def load_images(self):
@@ -78,6 +79,7 @@ class Environment:
         speed = robot.speed()
         sensors = {Location.FOOD: self.senses(robot, Location.FOOD),
                    Location.NEST: self.senses(robot, Location.NEST),
+                   Location.MIDDLE: self.senses(robot, Location.MIDDLE),
                    "FRONT": any(self.check_border_collision(robot, robot.pos[0] + speed * cos(radians(orientation)),
                                                             robot.pos[1] + speed * sin(radians(orientation)))),
                    "RIGHT": any(
@@ -155,6 +157,12 @@ class Environment:
                                          self.nest[1] + self.nest[2],
                                          fill="orange",
                                          outline="")
+        middld_circle = canvas.create_oval(self.middle[0] - self.middle[2],
+                                         self.middle[1] - self.middle[2],
+                                         self.middle[0] + self.middle[2],
+                                         self.middle[1] + self.middle[2],
+                                         fill="orange",
+                                         outline="")
 
     def get_best_bot_id(self):
         best_bot_id = 0
@@ -195,12 +203,19 @@ class Environment:
 
     def check_locations(self, robot):
         if robot.carries_food():
-            if self.senses(robot, Location.NEST):
+            if self.senses(robot, Location.NEST) :
                 # Spawn deposit location if needed
                 if robot.id not in self.foraging_spawns[Location.NEST]:
                     self.add_spawn(Location.NEST, robot)
                 # Check if robot can deposit food
                 if self.is_on_top_of_spawn(robot, Location.NEST):
+                    self.deposit_food(robot)
+            if self.senses(robot, Location.MIDDLE) :
+                # Spawn deposit location if needed
+                if robot.id not in self.foraging_spawns[Location.MIDDLE]:
+                    self.add_spawn(Location.MIDDLE, robot)
+                # Check if robot can deposit food
+                if self.is_on_top_of_spawn(robot, Location.MIDDLE):
                     self.deposit_food(robot)
         else:
             if self.senses(robot, Location.FOOD):
@@ -220,6 +235,7 @@ class Environment:
     def deposit_food(self, robot):
         robot.drop_food()
         self.foraging_spawns[Location.NEST].pop(robot.id)
+        self.foraging_spawns[Location.MIDDLE].pop(robot.id)
 
         reward = self.market.sell_strawberry(robot.id)
 

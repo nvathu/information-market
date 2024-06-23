@@ -81,7 +81,12 @@ class NaiveBehavior(Behavior):
         self.update_nav_table_based_on_dr()
 
     def sell_info(self, location):
-        return self.navigation_table.get_information_entry(location)
+        if location == Location.MIDDLE:
+            t = copy.deepcopy(self.navigation_table.get_information_entry(location))
+            t.age = 1
+            return t
+        else:
+            return self.navigation_table.get_information_entry(location)
 
     def update_behavior(self, sensors, api):
         for location in Location:
@@ -100,10 +105,14 @@ class NaiveBehavior(Behavior):
                 self.state = State.SEEKING_FOOD
             if self.navigation_table.is_information_valid_for_location(Location.NEST) and api.carries_food():
                 self.state = State.SEEKING_NEST
+            if self.navigation_table.is_information_valid_for_location(Location.MIDDLE) and api.carries_food():
+                self.state = State.SEEKING_NEST
 
         elif self.state == State.SEEKING_FOOD:
             if api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.NEST):
+                    self.state = State.SEEKING_NEST
+                if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_NEST
                 else:
                     self.state = State.EXPLORING

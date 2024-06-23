@@ -6,6 +6,7 @@ import numpy as np
 class Location(Enum):
     FOOD = 1
     NEST = 2
+    MIDDLE =3
 
 
 class Target:
@@ -35,7 +36,9 @@ class Target:
 
     def update(self, dr):
         self.age += 1
+        print(f"Updating with dr: {dr}")
         self.relative_distance -= dr
+        print(f"After update, relative_distance: {self.relative_distance}")
 
     def rotate(self, angle):
         rot_mat = rotation_matrix(angle)
@@ -62,6 +65,7 @@ class NavigationTable:
 
     def update_from_movement(self, dr):
         for location in self.entries:
+            print(f"Updating location {location} with dr: {dr}")
             self.entries[location].update(dr)
 
     def rotate_from_angle(self, angle):

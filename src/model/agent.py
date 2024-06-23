@@ -28,7 +28,10 @@ class AgentAPI:
 
 
 class Agent:
-    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green"}
+    colors = {
+        State.EXPLORING: "gray35", 
+        State.SEEKING_FOOD: "orange", 
+        State.SEEKING_NEST: "green"}
 
     def __init__(self, robot_id, x, y, environment, behavior_params, clock, speed, radius,
                  noise_sampling_mu, noise_sampling_sigma, noise_sd, fuel_cost,
@@ -62,7 +65,7 @@ class Agent:
         self.levi_counter = 1
         self.trace = deque(self.pos, maxlen=100)
 
-        self.dr = np.array([0, 0])
+        self.dr = np.array([0, 0, 0])
         self.sensors = {}
         self.behavior = behavior_factory(behavior_params)
         self.api = AgentAPI(self)
@@ -121,7 +124,10 @@ class Agent:
         self.update_trace()
 
     def get_info_from_behavior(self, location):
-        return self.behavior.sell_info(location)
+        if location == Location.MIDDLE:
+            return self.behavior.sell_info(Location.NEST)
+        else:
+            return self.behavior.sell_info(location)
 
     def update_trace(self):
         self.trace.appendleft(self.pos[1])
@@ -213,16 +219,6 @@ class Agent:
                                        self.orientation)[0],
                                    self.pos[1] + rotate(
                                        self.behavior.navigation_table.get_relative_position_for_location(Location.NEST),
-                                       self.orientation)[1],
-                                   arrow=LAST,
-                                   fill="darkorange")
-        arrow = canvas.create_line(self.pos[0],
-                                   self.pos[1],
-                                   self.pos[0] + rotate(
-                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
-                                       self.orientation)[0],
-                                   self.pos[1] + rotate(
-                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
                                        self.orientation)[1],
                                    arrow=LAST,
                                    fill="darkorange")
