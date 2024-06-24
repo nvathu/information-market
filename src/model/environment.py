@@ -184,8 +184,8 @@ class Environment:
         for bot_id, pos in self.foraging_spawns[Location.FOOD].items():
             canvas.create_image(pos[0] - 8, pos[1] - 8, image=self.img, anchor='nw')
 
-        for bot_id, pos in self.foraging_spawns[Location.NEST].items():
-            canvas.create_image(pos[0] - 8, pos[1] - 8, image=self.img, anchor='nw')
+        # for bot_id, pos in self.foraging_spawns[Location.NEST].items():
+        #     canvas.create_image(pos[0] - 8, pos[1] - 8, image=self.img, anchor='nw')
 
     def draw_best_bot(self, canvas):
         circle = canvas.create_oval(self.population[self.best_bot_id].pos[0] - 4,
