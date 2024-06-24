@@ -1,4 +1,5 @@
 import copy
+import random
 from abc import ABC, abstractmethod
 from enum import Enum
 from math import cos, radians, sin
@@ -52,6 +53,7 @@ class NaiveBehavior(Behavior):
         self.strategy = WeightedAverageAgeStrategy()
         self.dr = np.array([0, 0]).astype('float64')
         self.id = -1
+        self.destination = None
 
     def buy_info(self, session: CommunicationSession):
         for location in Location:
@@ -120,12 +122,18 @@ class NaiveBehavior(Behavior):
                     self.state = State.SEEKING_FOOD
                 else:
                     self.state = State.EXPLORING
-            elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
-                self.navigation_table.set_information_valid_for_location(Location.NEST, False)
-                self.state = State.EXPLORING
-            elif norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
-                self.navigation_table.set_information_valid_for_location(Location.MIDDLE, False)
-                self.state = State.EXPLORING
+            if self.destination == None:
+                self.destination  = random.choice([Location.NEST, Location.MIDDLE])
+            elif self.destination == Location.NEST:
+                if norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
+                    self.navigation_table.set_information_valid_for_location(Location.NEST, False)
+                    self.state = State.EXPLORING
+                    self.destination = None
+            elif self.destination == Location.MIDDLE:
+                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                    self.navigation_table.set_information_valid_for_location(Location.MIDDLE, False)
+                    self.state = State.EXPLORING
+                    self.destination = None
 
         if sensors["FRONT"]:
             if self.state == State.SEEKING_NEST:
@@ -144,14 +152,14 @@ class NaiveBehavior(Behavior):
                 self.dr = self.dr * api.speed() / food_norm
 
         elif self.state == State.SEEKING_NEST:
-            nest_norm = norm(self.navigation_table.get_relative_position_for_location(Location.NEST))
-            middle_norm = norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE))
-            if nest_norm < middle_norm:
+            if self.destination == Location.NEST:
                 self.dr = self.navigation_table.get_relative_position_for_location(Location.NEST)
+                nest_norm = norm(self.navigation_table.get_relative_position_for_location(Location.NEST))
                 if nest_norm > api.speed():
                     self.dr = self.dr * api.speed() / nest_norm
-            else : 
+            elif self.destination == Location.MIDDLE:
                 self.dr = self.navigation_table.get_relative_position_for_location(Location.MIDDLE)
+                middle_norm = norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE))
                 if middle_norm > api.speed():
                     self.dr = self.dr * api.speed() / middle_norm
             
