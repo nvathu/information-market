@@ -16,6 +16,8 @@ class State(Enum):
     EXPLORING = 1
     SEEKING_FOOD = 2
     SEEKING_NEST = 3
+    FOOD_MIDDLE_NEST = 4
+    NEST_MIDDLE_FOOD = 5
 
 
 def behavior_factory(behavior_params):
@@ -100,13 +102,13 @@ class NaiveBehavior(Behavior):
                 self.state = State.SEEKING_FOOD
             if self.navigation_table.is_information_valid_for_location(Location.NEST) and api.carries_food():
                 self.state = State.SEEKING_NEST
-
+            
         elif self.state == State.SEEKING_FOOD:
             if api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.NEST):
+                    self.state = State.FOOD_MIDDLE_NEST
+                else :
                     self.state = State.SEEKING_NEST
-                else:
-                    self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
                 self.state = State.EXPLORING
@@ -114,13 +116,23 @@ class NaiveBehavior(Behavior):
         elif self.state == State.SEEKING_NEST:
             if not api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.FOOD):
+                    self.state = State.NEST_MIDDLE_FOOD
+                else :
                     self.state = State.SEEKING_FOOD
-                else:
-                    self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.NEST, False)
                 self.state = State.EXPLORING
 
+        elif self.state == State.FOOD_MIDDLE_NEST:
+            if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                self.state = State.SEEKING_NEST
+
+        elif self.state == State.NEST_MIDDLE_FOOD:
+            if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():            
+                self.state = State.SEEKING_FOOD
+                    
+
+        
         if sensors["FRONT"]:
             if self.state == State.SEEKING_NEST:
                 self.navigation_table.set_information_valid_for_location(Location.NEST, False)
@@ -128,6 +140,10 @@ class NaiveBehavior(Behavior):
             elif self.state == State.SEEKING_FOOD:
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
                 self.state = State.EXPLORING
+            elif self.state in { State.FOOD_MIDDLE_NEST, State.NEST_MIDDLE_FOOD}:
+                self.navigation_table.set_information_valid_for_location(Location.MIDDLE, False)
+                self.state = State.EXPLORING
+                  
 
     def update_movement_based_on_state(self, api):
         if self.state == State.SEEKING_FOOD:
@@ -136,11 +152,19 @@ class NaiveBehavior(Behavior):
             if food_norm > api.speed():
                 self.dr = self.dr * api.speed() / food_norm
 
+            
         elif self.state == State.SEEKING_NEST:
             self.dr = self.navigation_table.get_relative_position_for_location(Location.NEST)
             nest_norm = norm(self.navigation_table.get_relative_position_for_location(Location.NEST))
             if nest_norm > api.speed():
                 self.dr = self.dr * api.speed() / nest_norm
+            
+
+        elif self.state in {State.FOOD_MIDDLE_NEST, State.NEST_MIDDLE_FOOD}:
+            self.dr = self.navigation_table.get_relative_position_for_location(Location.MIDDLE)
+            middle_norm = norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE))
+            if middle_norm > api.speed():
+                self.dr = self.dr * api.speed() / middle_norm
 
         else:
             turn_angle = api.get_levi_turn_angle()

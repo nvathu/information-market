@@ -28,7 +28,7 @@ class AgentAPI:
 
 
 class Agent:
-    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green"}
+    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green",State.FOOD_MIDDLE_NEST: "yellow",State.NEST_MIDDLE_FOOD:"pink"}
 
     def __init__(self, robot_id, x, y, environment, behavior_params, clock, speed, radius,
                  noise_sampling_mu, noise_sampling_sigma, noise_sd, fuel_cost,
@@ -72,10 +72,13 @@ class Agent:
                f"state: {self.comm_state.name}\n" \
                f"expected food at: ({round(self.pos[0] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD), self.orientation)[0])}, {round(self.pos[1] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD), self.orientation)[1])}), \n" \
                f"   known: {self.behavior.navigation_table.is_information_valid_for_location(Location.FOOD)}\n" \
+               f"expected middle at: ({round(self.pos[0] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE), self.orientation)[0])}, {round(self.pos[1] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE), self.orientation)[1])}), \n" \
+               f"   known: {self.behavior.navigation_table.is_information_valid_for_location(Location.MIDDLE)}\n" \
                f"expected nest at: ({round(self.pos[0] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.NEST), self.orientation)[0])}, {round(self.pos[1] + rotate(self.behavior.navigation_table.get_relative_position_for_location(Location.NEST), self.orientation)[1])}), \n" \
                f"   known: {self.behavior.navigation_table.is_information_valid_for_location(Location.NEST)}\n" \
                f"info age:\n" \
                f"   -food={round(self.behavior.navigation_table.get_information_entry(Location.FOOD).age, 3)}\n" \
+               f"   -middle={round(self.behavior.navigation_table.get_information_entry(Location.MIDDLE).age, 3)}\n" \
                f"   -nest={round(self.behavior.navigation_table.get_information_entry(Location.NEST).age, 3)}\n" \
                f"carries food: {self._carries_food}\n" \
                f"drift: {round(self.noise_mu, 5)}\n" \
@@ -177,7 +180,7 @@ class Agent:
                                     width=3)
         self.draw_comm_radius(canvas)
         self.draw_goal_vector(canvas)
-        self.draw_orientation(canvas)
+        # self.draw_orientation(canvas)
         # self.draw_trace(canvas)
 
     def draw_trace(self, canvas):
@@ -191,7 +194,8 @@ class Agent:
                                     outline="gray")
 
     def draw_goal_vector(self, canvas):
-        arrow = canvas.create_line(self.pos[0],
+        if self.behavior.navigation_table.is_information_valid_for_location(Location.FOOD) and self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD) is not None:
+            arrow = canvas.create_line(self.pos[0],
                                    self.pos[1],
                                    self.pos[0] + rotate(
                                        self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD),
@@ -201,7 +205,8 @@ class Agent:
                                        self.orientation)[1],
                                    arrow=LAST,
                                    fill="darkgreen")
-        arrow = canvas.create_line(self.pos[0],
+        if self.behavior.navigation_table.is_information_valid_for_location(Location.NEST) and self.behavior.navigation_table.get_relative_position_for_location(Location.NEST) is not None:    
+            arrow = canvas.create_line(self.pos[0],
                                    self.pos[1],
                                    self.pos[0] + rotate(
                                        self.behavior.navigation_table.get_relative_position_for_location(Location.NEST),
@@ -211,6 +216,17 @@ class Agent:
                                        self.orientation)[1],
                                    arrow=LAST,
                                    fill="darkorange")
+        if self.behavior.navigation_table.is_information_valid_for_location(Location.MIDDLE)  :
+            arrow = canvas.create_line(self.pos[0],
+                                   self.pos[1],
+                                   self.pos[0] + rotate(
+                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
+                                       self.orientation)[0],
+                                   self.pos[1] + rotate(
+                                       self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
+                                       self.orientation)[1],
+                                   arrow=LAST,
+                                   fill="blue")
 
     def draw_orientation(self, canvas):
         line = canvas.create_line(self.pos[0],

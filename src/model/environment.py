@@ -12,14 +12,15 @@ from model.payment import PaymentDB
 
 class Environment:
 
-    def __init__(self, width, height, agent_params, behavior_params, food, nest, payment_system_params, market_params, clock):
+    def __init__(self, width, height, agent_params, behavior_params, food, nest, middle, payment_system_params, market_params, clock):
         self.population = list()
         self.width = width
         self.height = height
         self.clock = clock
         self.food = (food['x'], food['y'], food['radius'])
         self.nest = (nest['x'], nest['y'], nest['radius'])
-        self.locations = {Location.FOOD: self.food, Location.NEST: self.nest}
+        self.middle = (middle['x'], middle['y'], middle['radius'])
+        self.locations = {Location.FOOD: self.food, Location.NEST: self.nest, Location.MIDDLE: self.middle}
         self.foraging_spawns = self.create_spawn_dicts()
         self.create_robots(agent_params, behavior_params)
         self.best_bot_id = self.get_best_bot_id()
@@ -30,9 +31,9 @@ class Environment:
         self.timestep = 0
 
         self.wall_x = self.width // 2
-        self.wall_y = self.height // 2.5
+        self.wall_y = self.height // 5
         self.wall_width = 15  
-        self.wall_height = 500
+        self.wall_height = 900
 
     def load_images(self):
         self.img = ImageTk.PhotoImage(file="../assets/strawberry.png")
@@ -78,6 +79,7 @@ class Environment:
         speed = robot.speed()
         sensors = {Location.FOOD: self.senses(robot, Location.FOOD),
                    Location.NEST: self.senses(robot, Location.NEST),
+                   Location.MIDDLE: self.senses(robot, Location.MIDDLE),
                    "FRONT": any(self.check_border_collision(robot, robot.pos[0] + speed * cos(radians(orientation)),
                                                             robot.pos[1] + speed * sin(radians(orientation)))),
                    "RIGHT": any(
@@ -103,7 +105,13 @@ class Environment:
             collide_y = True
 
         return collide_x, collide_y
-
+    
+    def check_wall_collision(self, new_position, radius):
+        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
+            self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
+            return True
+        return False
+    
     def senses(self, robot, location):
         dist_vector = robot.pos - np.array([self.locations[location][0], self.locations[location][1]])
         dist_from_center = np.sqrt(dist_vector.dot(dist_vector))
@@ -127,6 +135,15 @@ class Environment:
         for robot in self.population:
             robot.draw(canvas)
         # self.draw_best_bot(canvas)
+
+    def draw_wall(self, canvas):
+        canvas.create_rectangle(
+            self.wall_x - self.wall_width // 2,
+            self.wall_y,
+            self.wall_x + self.wall_width // 2,
+            self.wall_height,
+            fill="black"
+        )
 
     def draw_market_stats(self, stats_canvas):
         margin = 15
@@ -154,6 +171,12 @@ class Environment:
                                          self.nest[0] + self.nest[2],
                                          self.nest[1] + self.nest[2],
                                          fill="orange",
+                                         outline="")
+        middle_circle = canvas.create_oval(self.middle[0] - self.middle[2],
+                                         self.middle[1] - self.middle[2],
+                                         self.middle[0] + self.middle[2],
+                                         self.middle[1] + self.middle[2],
+                                         fill="yellow",
                                          outline="")
 
     def get_best_bot_id(self):
@@ -202,6 +225,8 @@ class Environment:
                 # Check if robot can deposit food
                 if self.is_on_top_of_spawn(robot, Location.NEST):
                     self.deposit_food(robot)
+            
+        
         else:
             if self.senses(robot, Location.FOOD):
                 # Spawn food if needed
@@ -230,17 +255,4 @@ class Environment:
         robot.pickup_food()
         self.foraging_spawns[Location.FOOD].pop(robot.id)
 
-    def check_wall_collision(self, new_position, radius):
-        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
-            self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
-            return True
-        return False
     
-    def draw_wall(self, canvas):
-        canvas.create_rectangle(
-            self.wall_x - self.wall_width // 2,
-            self.wall_y,
-            self.wall_x + self.wall_width // 2,
-            self.wall_height,
-            fill="black"
-        )
