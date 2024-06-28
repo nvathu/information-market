@@ -27,6 +27,8 @@ class CommunicationSession:
                                   location,
                                   get_orientation_from_vector(target.get_distance()),
                                   None)
+        
+    # has the fuction to cout, just add middle as destination to it and slipt into two case from food and from nest
         self._client.record_transaction(transaction)
         self._client.communication_happened()
         self._neighbors[neighbor_id].communication_happened()

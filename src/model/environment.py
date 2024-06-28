@@ -25,6 +25,7 @@ class Environment:
         self.create_robots(agent_params, behavior_params)
         self.best_bot_id = self.get_best_bot_id()
         self.payment_database = PaymentDB([bot.id for bot in self.population], payment_system_params)
+        self.success_deliver = 0
 
         self.market = market_factory(market_params)
         self.img = None
@@ -134,7 +135,7 @@ class Environment:
 
         for robot in self.population:
             robot.draw(canvas)
-        # self.draw_best_bot(canvas)
+        self.draw_best_bot(canvas)
 
     def draw_wall(self, canvas):
         canvas.create_rectangle(
@@ -181,10 +182,15 @@ class Environment:
 
     def get_best_bot_id(self):
         best_bot_id = 0
+        max_delivered_food = 0
         for bot in self.population:
             if 1 - abs(bot.noise_mu) > 1 - abs(self.population[best_bot_id].noise_mu):
                 best_bot_id = bot.id
+            # if bot.success_deliver > max_delivered_food:
+            #     max_delivered_food = bot.success_deliver
+            #     best_bot_id = bot.id
         return best_bot_id
+    # what is character consider as best bot, do the other robot follow it?
 
     def draw_strawberries(self, canvas):
         for bot_id, pos in self.foraging_spawns[Location.FOOD].items():
@@ -250,6 +256,7 @@ class Environment:
 
         self.payment_database.pay_reward(robot.id, reward=reward)
         self.payment_database.pay_creditors(robot.id, total_reward=reward)
+        robot.success_deliver +=1
 
     def pickup_food(self, robot):
         robot.pickup_food()

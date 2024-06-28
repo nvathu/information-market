@@ -104,24 +104,30 @@ class NaiveBehavior(Behavior):
                 self.state = State.SEEKING_NEST
             
         elif self.state == State.SEEKING_FOOD:
+            # if api.carries_food():
+            #     if self.navigation_table.is_information_valid_for_location(Location.NEST):
+            #         self.state = State.FOOD_MIDDLE_NEST
+            #     else :
+            #         self.state = State.SEEKING_NEST
             if api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.NEST):
-                    self.state = State.FOOD_MIDDLE_NEST
-                else :
                     self.state = State.SEEKING_NEST
+                else:
+                    self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
+                # can not find the food location
                 self.state = State.EXPLORING
 
         elif self.state == State.SEEKING_NEST:
-            if not api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.FOOD):
-                    self.state = State.NEST_MIDDLE_FOOD
-                else :
-                    self.state = State.SEEKING_FOOD
-            elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
+            # if not api.carries_food():
+            #     if self.navigation_table.is_information_valid_for_location(Location.FOOD):
+            #         self.state = State.NEST_MIDDLE_FOOD
+            #     else :
+            #         self.state = State.SEEKING_FOOD
+            if norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.NEST, False)
-                self.state = State.EXPLORING
+                self.state = State.NEST_MIDDLE_FOOD
 
         elif self.state == State.FOOD_MIDDLE_NEST:
             if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
@@ -198,8 +204,9 @@ class CarefulBehavior(NaiveBehavior):
                 if data["age"] < self.navigation_table.get_age_for_location(location) and bot_id not in \
                         self.pending_information[
                             location]:
+                    # can do if locaaiton is middle and group here, make trans and send diff value in two group
                     try:
-                        other_target = session.make_transaction(neighbor_id=bot_id, location=location)
+                        other_target = session.make_transaction(neighbor_id=bot_id, location=location) 
                         other_target.set_distance(other_target.get_distance() + session.get_distance_from(bot_id))
                         if not self.navigation_table.is_information_valid_for_location(location):
                             self.navigation_table.replace_information_entry(location, other_target)

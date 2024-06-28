@@ -25,6 +25,7 @@ class AgentAPI:
         self.radius = agent.radius
         self.get_relative_position_to_location = agent.get_relative_position_to_location
         self.get_levi_turn_angle = agent.get_levi_turn_angle
+        
 
 
 class Agent:
@@ -66,6 +67,7 @@ class Agent:
         self.sensors = {}
         self.behavior = behavior_factory(behavior_params)
         self.api = AgentAPI(self)
+        self.success_deliver = 0
 
     def __str__(self):
         return f"ID: {self.id}\n" \
@@ -226,14 +228,14 @@ class Agent:
                                        self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
                                        self.orientation)[1],
                                    arrow=LAST,
-                                   fill="blue")
+                                   fill="red")
 
     def draw_orientation(self, canvas):
         line = canvas.create_line(self.pos[0],
                                   self.pos[1],
                                   self.pos[0] + self._radius * cos(radians(self.orientation)),
                                   self.pos[1] + self._radius * sin(radians(self.orientation)),
-                                  fill="white")
+                                  fill="blue")
 
     def speed(self):
         return self._speed
