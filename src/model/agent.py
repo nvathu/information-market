@@ -28,7 +28,7 @@ class AgentAPI:
 
 
 class Agent:
-    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green",State.FOOD_MIDDLE_NEST: "yellow",State.NEST_MIDDLE_FOOD:"pink"}
+    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green",State.SEEKING_MIDDLE: "red"}
 
     def __init__(self, robot_id, x, y, environment, behavior_params, clock, speed, radius,
                  noise_sampling_mu, noise_sampling_sigma, noise_sd, fuel_cost,
@@ -139,10 +139,10 @@ class Agent:
         noisy_movement = rotate(wanted_movement, noise_angle)
         new_position = self.pos + noisy_movement
        
-        if self.environment.check_wall_collision(new_position, self._radius):
+        if self.environment.check_wall_collision(new_position):
             new_angle = noise_angle + 180
-            noisy_movement = rotate(wanted_movement, new_angle)
-            new_position = self.pos  + noisy_movement
+            new_movement = rotate(wanted_movement, new_angle)
+            new_position = self.pos  + new_movement
 
         self.orientation = get_orientation_from_vector(noisy_movement)
         self.pos = self.clamp_to_map(new_position)

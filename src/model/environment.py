@@ -176,7 +176,7 @@ class Environment:
                                          self.middle[1] - self.middle[2],
                                          self.middle[0] + self.middle[2],
                                          self.middle[1] + self.middle[2],
-                                         fill="yellow",
+                                         fill="pink",
                                          outline="")
 
     def get_best_bot_id(self):
