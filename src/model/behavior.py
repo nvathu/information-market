@@ -109,8 +109,6 @@ class NaiveBehavior(Behavior):
                 else :
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
-                print(self.id)
-                print("robot in norm food")
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
                 self.state = State.EXPLORING
 
@@ -121,17 +119,22 @@ class NaiveBehavior(Behavior):
                 else :
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
-                self.navigation_table.set_information_valid_for_location(Location.NEST, False)
-                
+                self.navigation_table.set_information_valid_for_location(Location.NEST, False)                
                 self.state = State.EXPLORING
 
         elif self.state == State.SEEKING_MIDDLE:
             if api.carries_food():
-                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                if self.navigation_table.is_information_valid_for_location(Location.NEST):
                     self.state = State.SEEKING_NEST
-            else:
-                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius(): 
+                    self.navigation_table.set_information_valid_for_location(Location.NEST, False)
+                    self.state = State.EXPLORING
+            if not api.carries_food():
+                if self.navigation_table.is_information_valid_for_location(Location.FOOD):
                     self.state = State.SEEKING_FOOD
+                elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius(): 
+                    self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
+                    self.state = State.EXPLORING
 
                     
 

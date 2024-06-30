@@ -139,8 +139,8 @@ class Agent:
         noisy_movement = rotate(wanted_movement, noise_angle)
         new_position = self.pos + noisy_movement
        
-        if self.environment.check_wall_collision(new_position):
-            new_angle = noise_angle + 180
+        if self.environment.check_wall_collision(self,new_position):
+            new_angle = noise_angle + 120
             new_movement = rotate(wanted_movement, new_angle)
             new_position = self.pos  + new_movement
 
@@ -226,7 +226,7 @@ class Agent:
                                        self.behavior.navigation_table.get_relative_position_for_location(Location.MIDDLE),
                                        self.orientation)[1],
                                    arrow=LAST,
-                                   fill="blue")
+                                   fill="red")
 
     def draw_orientation(self, canvas):
         line = canvas.create_line(self.pos[0],

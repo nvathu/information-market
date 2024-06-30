@@ -31,9 +31,9 @@ class Environment:
         self.timestep = 0
 
         self.wall_x = self.width // 2
-        self.wall_y = self.height // 5
+        self.wall_y = self.height // 1/3
         self.wall_width = 15  
-        self.wall_height = 900
+        self.wall_height = 200
 
     def load_images(self):
         self.img = ImageTk.PhotoImage(file="../assets/strawberry.png")
@@ -106,9 +106,11 @@ class Environment:
 
         return collide_x, collide_y
     
-    def check_wall_collision(self, new_position, radius):
-        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
-            self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
+    def check_wall_collision(self,robot, new_position):
+        if((self.wall_x - self.wall_width / 2 <= new_position[0] + robot._radius) and 
+           (new_position[0] - robot._radius  <= self.wall_x + self.wall_width*2)  and
+            (self.wall_y <= new_position[1]) and 
+             (new_position[1]  <= self.wall_y + self.wall_height)) :
             return True
         return False
     
@@ -138,10 +140,10 @@ class Environment:
 
     def draw_wall(self, canvas):
         canvas.create_rectangle(
-            self.wall_x - self.wall_width // 2,
+            self.wall_x ,
             self.wall_y,
-            self.wall_x + self.wall_width // 2,
-            self.wall_height,
+            self.wall_x + self.wall_width,
+            self.wall_y + self.wall_height,
             fill="black"
         )
 
