@@ -32,7 +32,7 @@ class Environment:
         self.wall_x = self.width // 2
         self.wall_y = self.height // 2.5
         self.wall_width = 15  
-        self.wall_height = 500
+        self.wall_height = 200
 
     def load_images(self):
         self.img = ImageTk.PhotoImage(file="../assets/strawberry.png")
@@ -231,16 +231,16 @@ class Environment:
         self.foraging_spawns[Location.FOOD].pop(robot.id)
 
     def check_wall_collision(self, new_position, radius):
-        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width / 2 and
+        if (self.wall_x - self.wall_width / 2 <= new_position[0] <= self.wall_x + self.wall_width * 1.5 and
             self.wall_y <= new_position[1] <= self.wall_y + self.wall_height):
             return True
         return False
     
     def draw_wall(self, canvas):
         canvas.create_rectangle(
-            self.wall_x - self.wall_width // 2,
+            self.wall_x,
             self.wall_y,
-            self.wall_x + self.wall_width // 2,
-            self.wall_height,
+            self.wall_x + self.wall_width ,
+            self.wall_y + self.wall_height,
             fill="black"
         )
