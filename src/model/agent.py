@@ -28,7 +28,7 @@ class AgentAPI:
 
 
 class Agent:
-    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green"}
+    colors = {State.EXPLORING: "gray35", State.SEEKING_FOOD: "orange", State.SEEKING_NEST: "green",State.SEEKING_MIDDLE: "pink"}
 
     def __init__(self, robot_id, x, y, environment, behavior_params, clock, speed, radius,
                  noise_sampling_mu, noise_sampling_sigma, noise_sd, fuel_cost,
