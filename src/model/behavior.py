@@ -16,6 +16,7 @@ class State(Enum):
     EXPLORING = 1
     SEEKING_FOOD = 2
     SEEKING_NEST = 3
+    SEEKING_MIDDLE = 4
 
 
 def behavior_factory(behavior_params):
@@ -103,8 +104,8 @@ class NaiveBehavior(Behavior):
 
         elif self.state == State.SEEKING_FOOD:
             if api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.NEST):
-                    self.state = State.SEEKING_NEST
+                if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
+                    self.state = State.SEEKING_MIDDLE
                 else:
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
@@ -113,8 +114,8 @@ class NaiveBehavior(Behavior):
 
         elif self.state == State.SEEKING_NEST:
             if not api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.FOOD):
-                    self.state = State.SEEKING_FOOD
+                if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
+                    self.state = State.SEEKING_MIDDLE
                 else:
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
@@ -127,6 +128,9 @@ class NaiveBehavior(Behavior):
                 self.state = State.EXPLORING
             elif self.state == State.SEEKING_FOOD:
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
+                self.state = State.EXPLORING
+            elif self.state == State.SEEKING_MIDDLE:
+                self.navigation_table.set_information_valid_for_location(Location.MIDDLE, False)
                 self.state = State.EXPLORING
 
     def update_movement_based_on_state(self, api):
@@ -141,6 +145,13 @@ class NaiveBehavior(Behavior):
             nest_norm = norm(self.navigation_table.get_relative_position_for_location(Location.NEST))
             if nest_norm > api.speed():
                 self.dr = self.dr * api.speed() / nest_norm
+                
+        elif self.state == State.SEEKING_MIDDLE:
+            self.dr = self.navigation_table.get_relative_position_for_location(Location.MIDDLE)
+            middle_norm = norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE))
+            if middle_norm > api.speed():
+                self.dr = self.dr * api.speed() / middle_norm
+
 
         else:
             turn_angle = api.get_levi_turn_angle()
@@ -221,6 +232,8 @@ class ScepticalBehavior(NaiveBehavior):
     def buy_info(self, session: CommunicationSession):
         for location in Location:
             metadata = session.get_metadata(location)
+            if(Location.MIDDLE)
+                print(self.state)
             metadata_sorted_by_age = sorted(metadata.items(), key=lambda item: item[1]["age"])
             for bot_id, data in metadata_sorted_by_age:
                 if data["age"] < self.navigation_table.get_age_for_location(location) and bot_id not in \
