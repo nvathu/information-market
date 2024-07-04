@@ -207,6 +207,16 @@ class Agent:
                                        self.orientation)[1],
                                    arrow=LAST,
                                    fill="darkorange")
+        arrow = canvas.create_line(self.pos[0],
+                                   self.pos[1],
+                                   self.pos[0] + rotate(
+                                       self.behavior.navigation_table.get_relative_position_for_location(Location.NEST),
+                                       self.orientation)[0],
+                                   self.pos[1] + rotate(
+                                       self.behavior.navigation_table.get_relative_position_for_location(Location.NEST),
+                                       self.orientation)[1],
+                                   arrow=LAST,
+                                   fill="red")
 
     def draw_orientation(self, canvas):
         line = canvas.create_line(self.pos[0],

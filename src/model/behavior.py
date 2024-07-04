@@ -101,43 +101,38 @@ class NaiveBehavior(Behavior):
                 self.state = State.SEEKING_FOOD
             if self.navigation_table.is_information_valid_for_location(Location.NEST) and api.carries_food():
                 self.state = State.SEEKING_NEST
- 
- 
 
         elif self.state == State.SEEKING_FOOD:
-            # has food location
             if api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_MIDDLE
-                else:
+                else :
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
                 self.state = State.EXPLORING
 
         elif self.state == State.SEEKING_NEST:
-            # has nest location
             if not api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_MIDDLE
-                else:
+                else :
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
-                self.navigation_table.set_information_valid_for_location(Location.NEST, False)
+                self.navigation_table.set_information_valid_for_location(Location.NEST, False)        
                 self.state = State.EXPLORING
-                
+
         elif self.state == State.SEEKING_MIDDLE:
-            # has midlle location
             if api.carries_food():
-                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                if  norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < 50 :
                     self.state = State.SEEKING_NEST
             else:
-                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < 50:
                     self.state = State.SEEKING_FOOD
+
+                    
+
         
-            
-                
-                
         if sensors["FRONT"]:
             if self.state == State.SEEKING_NEST:
                 self.navigation_table.set_information_valid_for_location(Location.NEST, False)
@@ -148,6 +143,7 @@ class NaiveBehavior(Behavior):
             elif self.state == State.SEEKING_MIDDLE:
                 self.navigation_table.set_information_valid_for_location(Location.MIDDLE, False)
                 self.state = State.EXPLORING
+                  
 
     def update_movement_based_on_state(self, api):
         if self.state == State.SEEKING_FOOD:
@@ -156,18 +152,19 @@ class NaiveBehavior(Behavior):
             if food_norm > api.speed():
                 self.dr = self.dr * api.speed() / food_norm
 
+            
         elif self.state == State.SEEKING_NEST:
             self.dr = self.navigation_table.get_relative_position_for_location(Location.NEST)
             nest_norm = norm(self.navigation_table.get_relative_position_for_location(Location.NEST))
             if nest_norm > api.speed():
                 self.dr = self.dr * api.speed() / nest_norm
-                
+            
+
         elif self.state == State.SEEKING_MIDDLE:
             self.dr = self.navigation_table.get_relative_position_for_location(Location.MIDDLE)
             middle_norm = norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE))
             if middle_norm > api.speed():
                 self.dr = self.dr * api.speed() / middle_norm
-
 
         else:
             turn_angle = api.get_levi_turn_angle()
@@ -248,8 +245,6 @@ class ScepticalBehavior(NaiveBehavior):
     def buy_info(self, session: CommunicationSession):
         for location in Location:
             metadata = session.get_metadata(location)
-            if(Location.MIDDLE) and (self.state == State.SEEKING_MIDDLE):
-                    print(self.state)
             metadata_sorted_by_age = sorted(metadata.items(), key=lambda item: item[1]["age"])
             for bot_id, data in metadata_sorted_by_age:
                 if data["age"] < self.navigation_table.get_age_for_location(location) and bot_id not in \
