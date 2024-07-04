@@ -99,30 +99,24 @@ class NaiveBehavior(Behavior):
         if self.state == State.EXPLORING:
             if self.navigation_table.is_information_valid_for_location(Location.FOOD) and not api.carries_food():
                 self.state = State.SEEKING_FOOD
-            if self.navigation_table.is_information_valid_for_location(Location.MIDDLE) and api.carries_food():
-                self.state = State.SEEKING_MIDDLE
+            if self.navigation_table.is_information_valid_for_location(Location.NEST) and api.carries_food():
+                self.state = State.SEEKING_NEST
+ 
+ 
 
         elif self.state == State.SEEKING_FOOD:
+            # has food location
             if api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_MIDDLE
                 else:
                     self.state = State.EXPLORING
-            # if not api.carries_food():
-            #     if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
-            #         self.state = State.SEEKING_MIDDLE
-            #     else:
-            #         self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
                 self.state = State.EXPLORING
 
         elif self.state == State.SEEKING_NEST:
-            if api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.NEST):
-                    self.state = State.SEEKING_NEST
-                else:
-                    self.state = State.EXPLORING
+            # has nest location
             if not api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_MIDDLE
@@ -133,21 +127,14 @@ class NaiveBehavior(Behavior):
                 self.state = State.EXPLORING
                 
         elif self.state == State.SEEKING_MIDDLE:
-            if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
-                self.navigation_table.set_information_valid_for_location(Location.MIDDLE, False)
-                self.state = State.EXPLORING
-            elif api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.NEST):
+            # has midlle location
+            if api.carries_food():
+                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
                     self.state = State.SEEKING_NEST
-                elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius(): 
-                    self.navigation_table.set_information_valid_for_location(Location.NEST, False)
-                    self.state = State.EXPLORING
-            elif not api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.FOOD):
+            else:
+                if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
                     self.state = State.SEEKING_FOOD
-                elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius(): 
-                    self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
-                    self.state = State.EXPLORING
+        
             
                 
                 
