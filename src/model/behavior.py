@@ -99,14 +99,16 @@ class NaiveBehavior(Behavior):
         if self.state == State.EXPLORING:
             if self.navigation_table.is_information_valid_for_location(Location.FOOD) and not api.carries_food():
                 self.state = State.SEEKING_FOOD
-            if self.navigation_table.is_information_valid_for_location(Location.NEST) and api.carries_food():
+            elif self.navigation_table.is_information_valid_for_location(Location.NEST) and api.carries_food():
                 self.state = State.SEEKING_NEST
+            elif self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
+                self.state = State.SEEKING_MIDDLE
 
         elif self.state == State.SEEKING_FOOD:
             if api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_MIDDLE
-                else :
+                else:
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius():
                 self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
@@ -116,25 +118,18 @@ class NaiveBehavior(Behavior):
             if not api.carries_food():
                 if self.navigation_table.is_information_valid_for_location(Location.MIDDLE):
                     self.state = State.SEEKING_MIDDLE
-                else :
+                else:
                     self.state = State.EXPLORING
             elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius():
-                self.navigation_table.set_information_valid_for_location(Location.NEST, False)                
+                self.navigation_table.set_information_valid_for_location(Location.NEST, False)
                 self.state = State.EXPLORING
 
         elif self.state == State.SEEKING_MIDDLE:
-            if api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.NEST):
+            if norm(self.navigation_table.get_relative_position_for_location(Location.MIDDLE)) < api.radius():
+                if api.carries_food():
                     self.state = State.SEEKING_NEST
-                elif norm(self.navigation_table.get_relative_position_for_location(Location.NEST)) < api.radius(): 
-                    self.navigation_table.set_information_valid_for_location(Location.NEST, False)
-                    self.state = State.EXPLORING
-            if not api.carries_food():
-                if self.navigation_table.is_information_valid_for_location(Location.FOOD):
+                else:
                     self.state = State.SEEKING_FOOD
-                elif norm(self.navigation_table.get_relative_position_for_location(Location.FOOD)) < api.radius(): 
-                    self.navigation_table.set_information_valid_for_location(Location.FOOD, False)
-                    self.state = State.EXPLORING
 
                     
 
@@ -249,6 +244,7 @@ class ScepticalBehavior(NaiveBehavior):
         self.threshold = threshold
 
     def buy_info(self, session: CommunicationSession):
+         
         for location in Location:
             metadata = session.get_metadata(location)
             metadata_sorted_by_age = sorted(metadata.items(), key=lambda item: item[1]["age"])
@@ -257,9 +253,23 @@ class ScepticalBehavior(NaiveBehavior):
                         self.pending_information[
                             location]:
                     try:
+                    #     if location == Location.MIDDLE:
+                    #         if self.state == State.SEEKING_FOOD:
+                    #             new_location  = Location.MIDDLE_TO_FOOD 
+                    #         elif self.state == State.SEEKING_NEST:
+                    #             new_location = Location.MIDDLE_TO_NEST
+                    #             other_target = session.make_transaction(neighbor_id=bot_id, location=new_location)
+                    #             print("fix")
+                    #             print(other_target)
+                                
+                    #     else:
+                            #  other_target = session.make_transaction(neighbor_id=bot_id, location=location)
+                            #  print("origin")
+                            #  print(other_target)
+                                
+                                        
                         other_target = session.make_transaction(neighbor_id=bot_id, location=location)
-                        other_target.set_distance(other_target.get_distance() + session.get_distance_from(
-                            bot_id))
+                        other_target.set_distance(other_target.get_distance() + session.get_distance_from(bot_id))
 
                         if not self.navigation_table.is_information_valid_for_location(location) or \
                                 self.difference_score(

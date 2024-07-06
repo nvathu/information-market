@@ -140,9 +140,14 @@ class Agent:
         new_position = self.pos + noisy_movement
        
         if self.environment.check_wall_collision(self,new_position):
-            new_angle = noise_angle + 120
+            new_angle = noise_angle + 180
             new_movement = rotate(wanted_movement, new_angle)
             new_position = self.pos  + new_movement
+
+        # if self.environment.check_wall_collision(self,new_position):
+        #     turn_angle = noise_angle + 180 
+        #     turned_movement = rotate(wanted_movement, turn_angle)
+        #     new_position = self.pos + turned_movement
 
         self.orientation = get_orientation_from_vector(noisy_movement)
         self.pos = self.clamp_to_map(new_position)
@@ -194,6 +199,7 @@ class Agent:
                                     outline="gray")
 
     def draw_goal_vector(self, canvas):
+        # give the correct vector for agent from init
         if self.behavior.navigation_table.is_information_valid_for_location(Location.FOOD) and self.behavior.navigation_table.get_relative_position_for_location(Location.FOOD) is not None:
             arrow = canvas.create_line(self.pos[0],
                                    self.pos[1],

@@ -12,7 +12,7 @@ from model.payment import PaymentDB
 
 class Environment:
 
-    def __init__(self, width, height, agent_params, behavior_params, food, nest, middle, payment_system_params, market_params, clock):
+    def __init__(self, width, height, agent_params, behavior_params, food, nest, middle,wall, payment_system_params, market_params, clock):
         self.population = list()
         self.width = width
         self.height = height
@@ -29,11 +29,12 @@ class Environment:
         self.market = market_factory(market_params)
         self.img = None
         self.timestep = 0
-
-        self.wall_x = self.width // 2
-        self.wall_y = self.height // 1/3
-        self.wall_width = 15  
-        self.wall_height = 200
+# put wall in config
+        self.wall= (wall['x'], wall['y'], 20,wall['height'])
+        # self.wall_x = self.width // 2
+        # self.wall_y = self.height // 1/3
+        # self.wall_width = 20 
+        # self.wall_height = 600
 
     def load_images(self):
         self.img = ImageTk.PhotoImage(file="../assets/strawberry.png")
@@ -107,10 +108,8 @@ class Environment:
         return collide_x, collide_y
     
     def check_wall_collision(self,robot, new_position):
-        if((self.wall_x - self.wall_width / 2 <= new_position[0] + robot._radius) and 
-           (new_position[0] - robot._radius  <= self.wall_x + self.wall_width*2)  and
-            (self.wall_y <= new_position[1]) and 
-             (new_position[1]  <= self.wall_y + self.wall_height)) :
+        if((self.wall[0] - self.wall[2] / 2 <= new_position[0] <= self.wall[0] + self.wall[2]*2)  and
+            (self.wall[1] <= new_position[1]  <= self.wall[1] + self.wall[3])) :
             return True
         return False
     
@@ -140,10 +139,10 @@ class Environment:
 
     def draw_wall(self, canvas):
         canvas.create_rectangle(
-            self.wall_x ,
-            self.wall_y,
-            self.wall_x + self.wall_width,
-            self.wall_y + self.wall_height,
+            self.wall[0] ,
+            self.wall[1],
+            self.wall[0] + self.wall[2],
+            self.wall[1] + self.wall[3],
             fill="black"
         )
 
