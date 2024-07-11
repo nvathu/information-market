@@ -2,13 +2,13 @@ import copy
 from abc import ABC, abstractmethod
 from enum import Enum
 from math import cos, radians, sin
-
+from random import random
 import numpy as np
 
 from model.communication import CommunicationSession
 from model.navigation import Location, NavigationTable
 from model.strategy import WeightedAverageAgeStrategy
-from helpers.utils import get_orientation_from_vector, norm, InsufficientFundsException, NoInformationSoldException, \
+from helpers.utils import get_orientation_from_vector,rotate, norm, InsufficientFundsException, NoInformationSoldException, \
     NoLocationSensedException
 
 
@@ -52,6 +52,7 @@ class NaiveBehavior(Behavior):
         self.state = State.EXPLORING
         self.strategy = WeightedAverageAgeStrategy()
         self.dr = np.array([0, 0]).astype('float64')
+        self.orientation = random() * 360
         self.id = -1
 
     def buy_info(self, session: CommunicationSession):
@@ -134,7 +135,7 @@ class NaiveBehavior(Behavior):
                     
 
         
-        if sensors["FRONT"]:
+        if sensors["FRONT"] or sensors["WALL"] :
             if self.state == State.SEEKING_NEST:
                 self.navigation_table.set_information_valid_for_location(Location.NEST, False)
                 self.state = State.EXPLORING
@@ -178,6 +179,18 @@ class NaiveBehavior(Behavior):
             self.dr[0] = -self.dr[0]
         if (sensors["RIGHT"] and self.dr[1] <= 0) or (sensors["LEFT"] and self.dr[1] >= 0):
             self.dr[1] = -self.dr[1]
+        if (sensors["WALL"]):
+            if self.dr[0] != 0:
+                self.dr[0] = -self.dr[0]
+                
+                
+            if self.dr[1] != 0:
+                self.dr[1] = -self.dr[1]
+
+        turn_move = rotate(self.dr, self.orientation + 180)
+        self.orientation= get_orientation_from_vector(turn_move)
+            
+
 
     def update_nav_table_based_on_dr(self):
         self.navigation_table.update_from_movement(self.dr)

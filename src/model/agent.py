@@ -139,10 +139,10 @@ class Agent:
         noisy_movement = rotate(wanted_movement, noise_angle)
         new_position = self.pos + noisy_movement
        
-        if self.environment.check_wall_collision(self,new_position):
-            new_angle = noise_angle + 180
-            new_movement = rotate(wanted_movement, new_angle)
-            new_position = self.pos  + new_movement
+        # if self.environment.check_wall_collision(self,new_position):
+        #     new_angle = noise_angle + 180
+        #     new_movement = rotate(wanted_movement, new_angle)
+        #     new_position = self.pos  + new_movement
 
         # if self.environment.check_wall_collision(self,new_position):
         #     turn_angle = noise_angle + 180 

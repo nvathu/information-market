@@ -93,6 +93,7 @@ class Environment:
                    "LEFT": any(
                        self.check_border_collision(robot, robot.pos[0] + speed * cos(radians((orientation + 90) % 360)),
                                                    robot.pos[1] + speed * sin(radians((orientation + 90) % 360)))),
+                    "WALL": self.check_wall_collision(robot, robot.pos[0] + speed * cos(radians(orientation)) , robot.pos[1] + speed * sin(radians(orientation)))
                    }
         return sensors
 
@@ -107,9 +108,9 @@ class Environment:
 
         return collide_x, collide_y
     
-    def check_wall_collision(self,robot, new_position):
-        if((self.wall[0] - self.wall[2] / 2 <= new_position[0] <= self.wall[0] + self.wall[2]*2)  and
-            (self.wall[1] <= new_position[1]  <= self.wall[1] + self.wall[3])) :
+    def check_wall_collision(self,robot, new_x, new_y):
+        if((self.wall[0] - self.wall[2] / 2 <= new_x <= self.wall[0] + self.wall[2]*2)  and
+            (self.wall[1] <=  new_y  <= self.wall[1] + self.wall[3])) :
             return True
         return False
     
