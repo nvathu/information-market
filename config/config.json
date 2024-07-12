@@ -11,9 +11,19 @@
     "y": 300,
     "radius": 50
   },
-  "simulation_steps": 1500,
+  "middle": {
+    "x": 600,
+    "y": 70,
+    "radius": 50
+  },
+  "wall": {
+    "x": 600,
+    "y": 200,
+    "height":300
+  },
+  "simulation_steps": 15000,
   "transitory_period": 7500,
-  "number_runs": 5,
+  "number_runs": 1,
   "visualization": {
     "activate": true,
     "fps": 60
@@ -24,7 +34,7 @@
   },
   "agent": {
     "radius": 8,
-    "speed": 2.5,
+    "speed": 6,
     "communication_radius": 50,
     "communication_stop_time": 0,
     "communication_cooldown": 0,
@@ -42,7 +52,7 @@
     },
     {
       "class": "ScepticalBehavior",
-      "population_size": 24,
+      "population_size": 20,
       "parameters": {
         "threshold": 0.25
       }
@@ -57,7 +67,7 @@
     },
     {
       "class": "ScaboteurBehavior",
-      "population_size": 1,
+      "population_size": 0,
       "parameters": {
         "rotation_angle": 90,
         "threshold": 0.25
