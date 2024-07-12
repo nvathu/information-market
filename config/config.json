@@ -24,7 +24,7 @@
   },
   "agent": {
     "radius": 8,
-    "speed": 2.5,
+    "speed": 6,
     "communication_radius": 50,
     "communication_stop_time": 0,
     "communication_cooldown": 0,

@@ -24,7 +24,7 @@ Then, navigate into the newly created folder, create a new python virtual enviro
 ```bash
 cd information-market
 python -m venv infomarket-env
-source infomarket-env/bin/activate
+source infomarket-env/Scripts/activate
 pip install -r requirements.txt
 ```
 ## Run
